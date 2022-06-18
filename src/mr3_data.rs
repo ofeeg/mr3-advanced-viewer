@@ -9,15 +9,6 @@ pub fn connect_to_mr3() ->(
     u32
 )
     
-    /*(process_memory::Pid,
-     process_memory::ProcessHandle,
-     (
-	 process_memory::DataMember<u16>,process_memory::DataMember<u16>,process_memory::DataMember<u16>,process_memory::DataMember<u16>,process_memory::DataMember<u16>,
-	 process_memory::DataMember<u16>, process_memory::DataMember<u16>,
-	 process_memory::DataMember<u8>, process_memory::DataMember<u8>, process_memory::DataMember<u8>, process_memory::DataMember<u8>
-     ),
-     process_memory::DataMember<u32>
-    )*/
 {
     let pcsx2_pid = sysinfo::Pid::from(108370);
     let handle = (i32::from(pcsx2_pid)).try_into_process_handle().unwrap();
