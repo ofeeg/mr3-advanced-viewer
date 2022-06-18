@@ -1,0 +1,12 @@
+
+[package]
+name = "mr3_advanced_viewer"
+version = "0.0.1"
+authors = ["ofeeg"]
+edition = "2021"
+
+[dependencies]
+iced = "0.4.2"
+libc = "0.2"
+sysinfo = "0.24.3"
+process-memory = "0.4.0"
