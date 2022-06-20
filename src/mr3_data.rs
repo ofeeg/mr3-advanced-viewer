@@ -1,6 +1,6 @@
 //extern crate libc;
 //extern crate process_memory;
-use process_memory::{Memory, DataMember, TryIntoProcessHandle};
+use process_memory::{Memory, DataMember, Pid, TryIntoProcessHandle};
 
 pub fn connect_to_mr3() ->(
     (u16, u16, u16, u16, u16,
@@ -10,7 +10,7 @@ pub fn connect_to_mr3() ->(
 )
     
 {
-    let pcsx2_pid = sysinfo::Pid::from(108370);
+    let pcsx2_pid = Pid::from(108370); 
     let handle = (i32::from(pcsx2_pid)).try_into_process_handle().unwrap();
     let mons_lif = DataMember::new_offset(handle, vec![0x20_38_41_70]);
     let mons_def = DataMember::new_offset(handle, vec![0x20_38_41_6E]);
