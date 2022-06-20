@@ -1,7 +1,14 @@
-# mr3-advanced-viewer
+# mr3-advanced-viewer v0.0.1(prototype)
 A GUI application to view Monster Rancher 3 data running in pcsx2.
 
-# Installation
+# How to Run
+## Windows
+Just select and run the executable. After that, if you already have MR3 running, just look up the Process ID(PID) from task manager and enter that in the text box. Once you've done that hit connect.
+
+Currently, it does NOT update automatically. You have to hit connect everytime the game updates the values(AKA: hit connect every week).
+
+For reporting bugs, DM or ping in any MR discord @most#4673.
+
 
 
 # Compilation
