@@ -1,13 +1,13 @@
-use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text, Row,};
+use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text, TextInput, Row, text_input};
 //use process_memory::DataMember;
-use std::default::Default;
+use std::{default::{Default, self}, ptr::null};
 mod mr3_data;
 pub fn main() -> iced::Result {
     //let data: MR3Data = MR3Data{data: mr3_data::connect_to_mr3()};
     Viewer::run(Settings::default())
 }
 
-#[derive(Default,Debug, Clone)]
+
 struct MR3Data{
   data:(
     (u16, u16, u16, u16, u16,
@@ -17,22 +17,29 @@ struct MR3Data{
 ),
 }
 
-#[derive(Default, Debug, Clone)]
 struct Viewer {
-    value: u16,
+    value: String,
     connect_button: button::State,
     data: MR3Data,
+    user_text: text_input::State,
 }
+
 #[derive(Debug, Clone)]
 enum Message {
-    ConnectPressed
+    ConnectPressed,
+    InputChanged(String)
 }
 
 
 impl Sandbox for Viewer {
     type Message = Message;
     fn new() -> Self {
-        Self::default()	    
+	Viewer{
+	    value: String::new(),
+	    connect_button: button::State::new(),
+	    user_text: text_input::State::new(),
+	    data: MR3Data { data: ((0,0,0,0,0,0,0,0,0,0,0),0) }
+	}
     }
 
     fn title(&self) -> String {
@@ -40,22 +47,33 @@ impl Sandbox for Viewer {
     }
 
     fn update(&mut self, message: Message) {
-	self.data =  MR3Data{data: mr3_data::connect_to_mr3()};
+	//self.data =  MR3Data{data: mr3_data::connect_to_mr3(value)};
         match message {
-            Message::ConnectPressed => {self.value = self.data.data.0.0/10},
+            Message::ConnectPressed => {self.data =  MR3Data{data: mr3_data::connect_to_mr3(self.value.parse::<i32>().unwrap())}},
+	    Message::InputChanged(new_value) => {self.value = new_value;}
         }
     }
 
     fn view(&mut self) -> Element<Message> {
-        let first_column = Column::new()
+        let button_column = Column::new()
             .padding(20)
             .align_items(Alignment::Center)
             .push(
 		Button::new(&mut self.connect_button, Text::new("Connect"))
 		    .on_press(Message::ConnectPressed),
-	    )
-            .push(Text::new(self.value.to_string())).into();
-    
+	    ).into();
+
+	let text_column = Column::new()
+	    .padding(20)
+	    .align_items(Alignment::Center)
+	    .push(TextInput::new( &mut self.user_text, "Enter MR3 PID", &*self.value, Message::InputChanged)).into();
+
+	let first_column = Column::new()
+	    .padding(20)
+	    .align_items(Alignment::Center)
+	    .push(Text::new(((self.data.data.0.0)/10u16).to_string()))
+	    .push(Text::new("LIF")).into();
+	
 	let second_column = Column::new()
 	    .padding(20)
 	    .align_items(Alignment::Center)
@@ -124,6 +142,8 @@ impl Sandbox for Viewer {
 
 	Column::with_children(vec!
 			      [
+				  button_column,
+				  text_column,
 				  Row::with_children(vec![first_column, second_column, third_column, fourth_column,fifth_column, sixth_column, seventh_column]).into(),
 				  Row::with_children(vec![eigth_column, ninth_column,tenth_column, eleventh_column, twelfth_column
 				  ]
