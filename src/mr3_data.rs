@@ -12,7 +12,7 @@ pub fn connect_to_mr3() ->(
 {
     
     let mut pid_addr: i32 = 0;
-    let mut pcsx2_pid: Pid = Pid::from(1);
+    let mut pcsx2_pid: Pid = 0;
     #[cfg(not(target_os = "linux"))]{pcsx2_pid = Pid::from(pid_addr as u32);}
     #[cfg(target_os = "linux")]{let pcsx2_pid = Pid::from(pid_addr);}
     let handle = (pcsx2_pid).try_into_process_handle().unwrap();
