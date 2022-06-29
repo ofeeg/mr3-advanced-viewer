@@ -1,2 +1,0 @@
-cargo:rustc-cfg=vec3a_sse2
-cargo:rustc-cfg=vec4_sse2
