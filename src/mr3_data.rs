@@ -1,5 +1,5 @@
-use process_memory::{Memory, DataMember, Pid, TryIntoProcessHandle, ProcessHandle};
-use sysinfo::{ProcessExt, System, SystemExt};
+use process_memory::{Memory, DataMember,TryIntoProcessHandle, ProcessHandle};
+use sysinfo::{PidExt,ProcessExt, System, SystemExt};
 
 #[cfg(windows)]
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
