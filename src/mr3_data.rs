@@ -1,5 +1,11 @@
-use process_memory::{Memory, DataMember, Pid, TryIntoProcessHandle};
+use process_memory::{Memory, DataMember, Pid, TryIntoProcessHandle, ProcessHandle};
 use sysinfo::{ProcessExt, System, SystemExt};
+
+#[cfg(windows)]
+fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
+
+#[cfg(not(windows))]
+fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle {i32::from(pid).try_into_process_handle().unwrap()}
 pub fn connect_to_mr3() ->(
     (u16, u16, u16, u16, u16,
      u16, u16,
@@ -12,15 +18,13 @@ pub fn connect_to_mr3() ->(
 {
     //let mut pid_addr: i32 = x;
     let mut pcsx2_pid: sysinfo::Pid = sysinfo::Pid::from(0); //= Pid::from(1);
-    let mut handle = (i32::from(pcsx2_pid)).try_into_process_handle().unwrap();
     let mut sys = System::new_all();
     sys.refresh_all();
     for (pid, process) in sys.processes() {
 	if process.name() == "pcsx2.exe".to_string() {println!("Connected: [{}] {}", pid, process.name());}
 	if process.name() == "pcsx2.exe".to_string() { pcsx2_pid = *pid; }
     }
-    let handle = (i32::from(pcsx2_pid)).try_into_process_handle().unwrap();
-    #[cfg(not(target_os = "linux"))]{let handle = (u32::from(pcsx2_pid)).try_into_process_handle().unwrap();}//pcsx2_pid = Pid::from(pid_addr as u32);}
+    let handle = pcsx2_handle(pcsx2_pid);
     let mons_lif = DataMember::new_offset(handle, vec![0x20_38_41_70]);
     let mons_def = DataMember::new_offset(handle, vec![0x20_38_41_6E]);
     let mons_int = DataMember::new_offset(handle, vec![0x20_38_41_6C]);
