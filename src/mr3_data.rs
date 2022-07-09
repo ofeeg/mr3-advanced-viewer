@@ -1,5 +1,5 @@
 use process_memory::{Memory, DataMember,TryIntoProcessHandle, ProcessHandle};
-use sysinfo::{PidExt,ProcessExt, System, SystemExt};
+use sysinfo::{ProcessExt, System, SystemExt};
 
 #[cfg(windows)]
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
@@ -16,12 +16,11 @@ pub fn connect_to_mr3() ->(
 )
     
 {
-    //let mut pid_addr: i32 = x;
     let mut pcsx2_pid: sysinfo::Pid = sysinfo::Pid::from(0); //= Pid::from(1);
     let mut sys = System::new_all();
     sys.refresh_all();
     for (pid, process) in sys.processes() {
-	if process.name() == "pcsx2.exe".to_string() {println!("Connected: [{}] {}", pid, process.name());}
+	//if process.name() == "pcsx2.exe".to_string() {println!("Connected: [{}] {}", pid, process.name());}
 	if process.name() == "pcsx2.exe".to_string() { pcsx2_pid = *pid; }
     }
     let handle = pcsx2_handle(pcsx2_pid);

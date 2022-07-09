@@ -1056,7 +1056,7 @@ dependencies = [
 
 [[package]]
 name = "mr3_advanced_viewer"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "iced",
  "libc",

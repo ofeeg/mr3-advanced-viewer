@@ -1,4 +1,4 @@
-use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text, TextInput, Row, text_input};
+use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text, Row};
 mod mr3_data;
 pub fn main() -> iced::Result {
     Viewer::run(Settings::default())
@@ -7,7 +7,6 @@ pub fn main() -> iced::Result {
 
 
 struct Viewer {
-    value: String,
     connect_button: button::State,
     data: (
     (u16, u16, u16, u16, u16,
@@ -22,15 +21,22 @@ struct Viewer {
 #[derive(Debug, Clone)]
 enum Message {
     ConnectPressed,
-    //InputChanged(String)
 }
 
+macro_rules! val {
+    ($data:expr, $desc:literal) => {
+	 Column::new()
+	    .padding(20)
+	    .align_items(Alignment::Center)
+	    .push(Text::new($data))
+	    .push(Text::new($desc)).into()
+    };
+}
 
 impl Sandbox for Viewer {
     type Message = Message;
     fn new() -> Self {
 	Viewer{
-	    value: String::new(),
 	    connect_button: button::State::new(),
 	    data:((0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),0) 
 	}
@@ -43,7 +49,6 @@ impl Sandbox for Viewer {
     fn update(&mut self, message: Message) {
         match message {
             Message::ConnectPressed => {self.data = mr3_data::connect_to_mr3()},
-	    //Message::InputChanged(new_value) => {self.value = new_value;},
         }
     }
 
@@ -56,102 +61,36 @@ impl Sandbox for Viewer {
 		    .on_press(Message::ConnectPressed),
 	    ).into();
 
-	let first_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.0)/10u16).to_string()))
-	    .push(Text::new("LIF")).into();
+	let first_column = val!((self.data.0.0/10u16).to_string(), "LIF");
 	
-	let second_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.1)/10u16).to_string()))
-	    .push(Text::new("POW")).into();
+	let second_column = val!((self.data.0.1/10u16).to_string(), "POW");
 	
-	let third_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.2)/10u16).to_string()))
-	    .push(Text::new("INT")).into();
+	let third_column = val!((self.data.0.2/10u16).to_string(), "INT");
 
-	let fourth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.3)/10u16).to_string()))
-	    .push(Text::new("SPD")).into();
+	let fourth_column = val!((self.data.0.3/10u16).to_string(), "SPD");
 
-	let fifth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.4)/10u16).to_string()))
-	    .push(Text::new("DEF")).into();
+	let fifth_column = val!((self.data.0.4/10u16).to_string(), "DEF");
 
-	let sixth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.5)/10u16).to_string()))
-	    .push(Text::new("Lifespan")).into();
+	let sixth_column = val!((self.data.0.5/10u16).to_string(), "Lifespan");
+    
+	let seventh_column = val!((self.data.0.6/10u16).to_string(), "InitialSpan");
+
+	let eigth_column = val!((self.data.0.7).to_string(), "Fatigue");
+
+	let ninth_column = val!((self.data.0.8).to_string(), "Stress");
+
+	let tenth_column = val!((self.data.0.9).to_string(), "Fear");
+
+	let eleventh_column = val!((self.data.0.10).to_string(), "Spoil");
+
+	let twelfth_column = val!((self.data.0.11).to_string(),"Form");
+
+	let thirteenth_column = val!((self.data.0.12).to_string(),"Protein");
+
+	let fourteenth_column = val!((self.data.0.13).to_string(), "Vitamin");
+	let fifteenth_column = val!((self.data.0.14).to_string(), "Mineral");
 	
-	let seventh_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.6)/10u16).to_string()))
-	    .push(Text::new("InitialSpan")).into();
-
-	let eigth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.7)).to_string()))
-	    .push(Text::new("Fatigue")).into();
-
-	let ninth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.8)).to_string()))
-	    .push(Text::new("Stress")).into();
-
-	let tenth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.9)).to_string()))
-	    .push(Text::new("Fear")).into();
-
-	let eleventh_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.10)).to_string()))
-	    .push(Text::new("Spoil")).into();
-
-	let twelfth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.11)).to_string()))
-	    .push(Text::new("Form")).into();
-
-	let thirteenth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.12)).to_string()))
-	    .push(Text::new("Protein")).into();
-
-	let fourteenth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.13)).to_string()))
-	    .push(Text::new("Vitamin")).into();
-
-	let fifteenth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.0.14)).to_string()))
-	    .push(Text::new("Mineral")).into();
-
-	
-	let sixteenth_column = Column::new()
-	    .padding(20)
-	    .align_items(Alignment::Center)
-	    .push(Text::new(((self.data.1)).to_string()))
-	    .push(Text::new("Money")).into();
+	let sixteenth_column = val!((self.data.1).to_string(),"Money");
 
 	Column::with_children(vec!
 			      [
