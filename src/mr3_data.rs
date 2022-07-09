@@ -10,7 +10,8 @@ pub fn connect_to_mr3() ->(
     (u16, u16, u16, u16, u16,
      u16, u16,
      u8, u8, u8, u8,
-     u8, u8, u8, u8
+     u8, u8, u8, u8,
+     u8
     ),
     u32
 )
@@ -39,15 +40,28 @@ pub fn connect_to_mr3() ->(
     let mons_prot = DataMember::new_offset(handle, vec![0x20_38_41_A4]);
     let mons_vita = DataMember::new_offset(handle, vec![0x20_38_41_A5]);
     let mons_mine = DataMember::new_offset(handle, vec![0x20_38_41_A6]);
+    let mons_rate = DataMember::new_offset(handle, vec![0x20_38_41_32]);
     let player_money = DataMember::new_offset(handle, vec![0x20_37_BE_AC]);
     (
 	(mons_lif.read().unwrap(), mons_pow.read().unwrap(), mons_int.read().unwrap(),
 	 mons_spd.read().unwrap(), mons_def.read().unwrap(), mons_lifespan.read().unwrap(),
 	 mons_initspan.read().unwrap(), mons_fatigue.read().unwrap(),
 	 mons_stress.read().unwrap(), mons_spoil.read().unwrap(), mons_fear.read().unwrap(),
-mons_form.read().unwrap(), mons_prot.read().unwrap(),  mons_vita.read().unwrap(), mons_mine.read().unwrap()
+	 mons_form.read().unwrap(), mons_prot.read().unwrap(),  mons_vita.read().unwrap(), mons_mine.read().unwrap(),
+	 mons_rate.read().unwrap()
 	),
 	player_money.read().unwrap()
     )
     
+}
+pub fn determine_gr(gr: u8) -> String{
+    match gr{
+	0 => {"(Early Growth(Strong))".to_string()}
+	1 => {"(Early Growth(Mild))".to_string()}
+	2 => {"(Standard)".to_string()}
+	3 => {"(Late Growth(Mild))".to_string()}
+	4 => {"(Late Growth(Strong))".to_string()}
+	5 => {"Sustainable".to_string()}
+	_ => {"Invalid".to_string()}
+    }
 }
