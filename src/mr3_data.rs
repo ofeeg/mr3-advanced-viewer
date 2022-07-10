@@ -5,6 +5,7 @@ use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
 
 #[cfg(not(windows))]
+
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle {i32::from(pid).try_into_process_handle().unwrap()}
 pub fn connect_to_mr3() ->(
     (u16, u16, u16, u16, u16,
@@ -13,7 +14,8 @@ pub fn connect_to_mr3() ->(
      u8, u8, u8, u8,
      u8
     ),
-    u32
+    u32,
+    (u8, u8, u8, u8, u8)
 )
     
 {
@@ -41,6 +43,11 @@ pub fn connect_to_mr3() ->(
     let mons_vita = DataMember::new_offset(handle, vec![0x20_38_41_A5]);
     let mons_mine = DataMember::new_offset(handle, vec![0x20_38_41_A6]);
     let mons_rate = DataMember::new_offset(handle, vec![0x20_38_41_32]);
+    let pow_rate = DataMember::new_offset(handle, vec![0x20_38_41_91]);
+    let spd_rate = DataMember::new_offset(handle, vec![0x20_38_41_92]);
+    let int_rate = DataMember::new_offset(handle, vec![0x20_38_41_93]);
+    let def_rate = DataMember::new_offset(handle, vec![0x20_38_41_94]);
+    let lif_rate = DataMember::new_offset(handle, vec![0x20_38_41_95]);
     let player_money = DataMember::new_offset(handle, vec![0x20_37_BE_AC]);
     (
 	(mons_lif.read().unwrap(), mons_pow.read().unwrap(), mons_int.read().unwrap(),
@@ -50,7 +57,11 @@ pub fn connect_to_mr3() ->(
 	 mons_form.read().unwrap(), mons_prot.read().unwrap(),  mons_vita.read().unwrap(), mons_mine.read().unwrap(),
 	 mons_rate.read().unwrap()
 	),
-	player_money.read().unwrap()
+	player_money.read().unwrap(),
+	(
+	    lif_rate.read().unwrap(), pow_rate.read().unwrap(), int_rate.read().unwrap(),
+		spd_rate.read().unwrap(), def_rate.read().unwrap()
+	)
     )
     
 }

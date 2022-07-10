@@ -15,7 +15,10 @@ struct Viewer {
      u8, u8, u8, u8,
      u8
     ),
-    u32
+	u32,
+	(
+	    u8, u8, u8, u8, u8
+	)
 ) ,
 }
 
@@ -23,6 +26,26 @@ struct Viewer {
 enum Message {
     ConnectPressed,
 }
+
+
+macro_rules! sr {
+    ($s:expr) => {
+	match $s{
+	    0 => {"(E)"}
+	    1 => {"(E)"}
+	    2 => {"(E)"}
+	    3 => {"(D)"}
+	    4 => {"(D)"}
+	    5 => {"(C)"}
+	    6 => {"(C)"}
+	    7 => {"(B)"}
+	    8 => {"(B)"}
+	    9 => {"(A)"}
+	    _ => {"(?)"}
+	}
+    }
+}
+
 
 macro_rules! val {
     ($data:expr, $desc:literal) => {
@@ -39,7 +62,7 @@ impl Sandbox for Viewer {
     fn new() -> Self {
 	Viewer{
 	    connect_button: button::State::new(),
-	    data:((0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69),0) 
+	    data:((0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69),0,(69, 69, 69, 69, 69)) 
 	}
     }
 
@@ -62,11 +85,11 @@ impl Sandbox for Viewer {
 		    .on_press(Message::ConnectPressed),
 	    ).into();
 
-	let first_column = val!((self.data.0.0/10u16).to_string(), "LIF");	
-	let second_column = val!((self.data.0.1/10u16).to_string(), "POW");
-	let third_column = val!((self.data.0.2/10u16).to_string(), "INT");
-	let fourth_column = val!((self.data.0.3/10u16).to_string(), "SPD");
-	let fifth_column = val!((self.data.0.4/10u16).to_string(), "DEF");
+	let first_column = val!((self.data.0.0/10u16).to_string() + sr!(self.data.2.0), "LIF");
+	let second_column = val!((self.data.0.1/10u16).to_string()+sr!(self.data.2.1), "POW");
+	let third_column = val!((self.data.0.2/10u16).to_string()+sr!(self.data.2.2), "INT");
+	let fourth_column = val!((self.data.0.3/10u16).to_string()+sr!(self.data.2.3), "SPD");
+	let fifth_column = val!((self.data.0.4/10u16).to_string()+sr!(self.data.2.4), "DEF");
 	let sixth_column = val!((self.data.0.5/10u16).to_string(), "Lifespan");
 	let seventh_column = val!((self.data.0.6/10u16).to_string(), "InitialSpan");
 	let eigth_column = val!((self.data.0.7).to_string(), "Fatigue");
