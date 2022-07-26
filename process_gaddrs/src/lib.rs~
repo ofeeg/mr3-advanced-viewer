@@ -1,0 +1,5 @@
+pub trait ProcessGaddrs
+{
+    fn new(s: usize) -> Self;
+    fn init_data(&mut self, _start: u32, _offsets: Vec<u32>);
+}
