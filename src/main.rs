@@ -1,8 +1,34 @@
-use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text, Row};
+use iced::{button,  Container, container, Alignment, Button, Column, Element, Sandbox, Settings, Text, Row, Color, Background,};
 use mr3_data::MonMove;
 mod mr3_data;
 pub fn main() -> iced::Result {
     Viewer::run(Settings::default())
+}
+
+
+struct StatRate{
+    rate: String,
+}
+
+impl container::StyleSheet for StatRate
+{
+    fn style(&self) -> container::Style {
+	container::Style
+	{
+	    text_color: Some(Color::WHITE),
+	    background: match self.rate.as_str(){
+		"(E)" => Some(Background::Color(Color::from_rgb(1f32, 0f32, 0f32))),
+		"(D)" => Some(Background::Color(Color::from_rgb(0.75f32, 0.5f32, 0f32))),
+		"(C)" => Some(Background::Color(Color::from_rgb(0f32, 0.5f32, 0.25f32))),
+		"(B)" => Some(Background::Color(Color::from_rgb(0f32, 0.75f32, 0.15f32))),
+		"(A)" => Some(Background::Color(Color::from_rgb(0f32, 1f32, 0f32))),
+		_ => Some(Background::Color(Color::from_rgb(0f32, 0f32, 0f32)))
+	    },
+	    border_radius: 10f32,
+	    border_width: 10f32,
+	    border_color: Color::TRANSPARENT,
+	}
+    }
 }
 
 type ViewData = (
@@ -70,7 +96,25 @@ macro_rules! val {
 	    .padding(20)
 	    .align_items(Alignment::Center)
 	    .push(Text::new($data))
-	    .push(Text::new($desc)).into()
+	    .push(Text::new($desc))
+    };
+    /*($data:expr, $desc:literal, $highlight:literal) => {
+	Column::new()
+	    .padding(20)
+	    .align_items(Alignment::Center)
+	    .push(Text::new($data))
+	    .push(Text::new($desc))
+	    .push(Text::new($highlight.to_string()))
+    };*/
+}
+macro_rules! monget
+{
+    ($self:ident, $loc:tt, $loc2:tt) => {
+	match $self.data.lock()
+	{
+	    Ok(y) => {y.$loc.$loc2},
+	    Err(err) => panic!("{}", err),
+	}
     };
 }
 
@@ -121,153 +165,110 @@ impl Sandbox for Viewer {
 		    .on_press(Message::MovePressed),
 	    ).into();
 
-	let first_column = //val!(((self.data.lock().unwrap().0.0) / 10u16).to_string() + sr!(self.data.lock().unwrap().2.0), "LIF");
-	val!(((match self.data.lock()
-					       {
-						   Ok(y) => y.0.0,
-						   Err(err) => panic!("{}", err),
-					       }
-	)/10u16).to_string() + sr!(match self.data.lock(){
-						   Ok(y) => y.2.0,
-						   Err(err) => panic!("{}", err),}), "LIF");
-
+	let first_column =
+	    Container::new(
+		val!((monget!(self, 0, 0)
+				  /10u16).to_string() + sr!(monget!(self,2,0)), "LIF"))
+	    .style(
+		StatRate{rate: sr!(monget!(self,2,0)).to_string()}).into();
+	
 	let second_column =
-	//val!(((self.data.lock().unwrap().0.1) / 10u16).to_string() + sr!(self.data.lock().unwrap().2.1), "POW");
-	val!(((match self.data.lock()
-					       {
-						   Ok(y) => y.0.1,
-						   Err(err) => panic!("{}",err),
-					       }
-	)/10u16).to_string() + sr!(match self.data.lock(){
-						   Ok(y) => y.2.1,
-						   Err(err) => panic!("{}", err),}), "POW");
-	//val!(((*self.data).0.1/10u16).to_string()+sr!((*self.data).2.1), "POW");
-	let third_column = //val!(((self.data.lock().unwrap().0.2) / 10u16).to_string() + sr!(self.data.lock().unwrap().2.2), "INT");
-	val!(((match self.data.lock()
-					       {
-						   Ok(y) => y.0.2,
-						   Err(err) => panic!("{}", err),
-					       }
-	)/10u16).to_string() + sr!(match self.data.lock(){
-						   Ok(y) => y.2.2,
-						   Err(err) => panic!("{}", err),}), "INT");
-	//val!(((*self.data).0.2/10u16).to_string()+sr!((*self.data).2.2), "INT");
-	let fourth_column = //val!(((self.data.lock().unwrap().0.3) / 10u16).to_string() + sr!(self.data.lock().unwrap().2.3), "SPD");
-	val!(((match self.data.lock()
-					       {
-						   Ok(y) => y.0.3,
-						   Err(err) => panic!("{}", err),
-					       }
-	)/10u16).to_string() + sr!(match self.data.lock(){
-						   Ok(y) => y.2.3,
-						   Err(err) => panic!("{}", err),}), "SPD");
-	//val!(((*self.data).0.3/10u16).to_string()+sr!((*self.data).2.3), "SPD");
-	let fifth_column = //val!(((self.data.lock().unwrap().0.4) / 10u16).to_string() + sr!(self.data.lock().unwrap().2.4), "DEF");
-	val!(((match self.data.lock()
-					       {
-						   Ok(y) => y.0.4,
-						   Err(err) => panic!("{}", err),
-					       }
-	)/10u16).to_string() + sr!(match self.data.lock(){
-						   Ok(y) => y.2.4,
-						   Err(err) => panic!("{}", err),}), "DEF");
-	//val!(((*self.data).0.4/10u16).to_string()+sr!((*self.data).2.4), "DEF");
-	let sixth_column = //val!(((self.data.lock().unwrap().0.5) / 10u16).to_string(), "Lifespan");
-	val!(((match self.data.lock()
+	    Container::new(val!(((monget!(self,0,1))/10u16).to_string() +
+				sr!(monget!(self,2,1)), "POW")).style(StatRate{rate: sr!(monget!(self,2,1)).to_string()}).into();
+	let third_column = 
+	    Container::new(val!(((monget!(self,0,2))/10u16).to_string() +
+			    sr!(monget!(self,2,2)),"INT")).style(StatRate{rate: sr!(monget!(self,2,2)).to_string()}).into();
+	let fourth_column = Container::new(val!(((monget!(self,0,3))/10u16).to_string() +
+						sr!(monget!(self,2,3)),"SPD")).style(StatRate{rate: sr!(monget!(self,2,3)).to_string()}).into();
+	let fifth_column = Container::new(val!(((monget!(self,0,4))/10u16).to_string() +
+			    sr!(monget!(self,2,4)),"DEF")).style(StatRate{rate: sr!(monget!(self,2,4)).to_string()}).into();
+	
+	let sixth_column = val!(((match self.data.lock()
 				  {
 				      Ok(y) => y.0.5,
 				      Err(err) => panic!("{}", err),
 				  }
-	)/10u16).to_string(), "Lifespan");
-	//val!(((*self.data).0.5/10u16).to_string(), "Lifespan");
-	let seventh_column = //val!(((self.data.lock().unwrap().0.6) / 10u16).to_string(), "InitialSpan");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.6,
-				      Err(err) => panic!("{}", err),
-				  }
-	)/10u16).to_string(), "InitialSpan");
-	//val!(((*self.data).0.6/10u16).to_string(), "InitialSpan");
-	let eigth_column = //val!(((self.data.lock().unwrap().0.7)).to_string(), "Fatigue");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.7,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Fatigue");
-	//val!(((*self.data).0.7).to_string(), "Fatigue");
-	let ninth_column =  //val!(((self.data.lock().unwrap().0.8)).to_string(), "Stress");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.8,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Stress");
-	//val!(((*self.data).0.8).to_string(), "Stress");
-	let tenth_column =  //val!(((self.data.lock().unwrap().0.9)).to_string(), "Fear");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.9,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Fear");
-	//val!(((*self.data).0.9).to_string(), "Fear");
-	let eleventh_column = //val!(((self.data.lock().unwrap().0.10)).to_string(), "Spoil");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.10,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Spoil");
-	//val!(((*self.data).0.10).to_string(), "Spoil");
-	let twelfth_column = //val!(((self.data.lock().unwrap().0.11)).to_string(),"Form");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.11,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Form");
-	//val!(((*self.data).0.11).to_string(),"Form");
-	let thirteenth_column = //val!(((self.data.lock().unwrap().0.12)).to_string(),"Protein");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.12,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Protein");
-	//val!(((*self.data).0.12).to_string(),"Protein");
-	let fourteenth_column = //val!(((self.data.lock().unwrap().0.13)).to_string(),"Vitamin");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.13,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Vitamin");
-	//val!(((*self.data).0.13).to_string(), "Vitamin");
-	let fifteenth_column = //val!(((self.data.lock().unwrap().0.14)).to_string(),"Mineral");
-	val!(((match self.data.lock()
-				  {
-				      Ok(y) => y.0.14,
-				      Err(err) => panic!("{}", err),
-				  }
-	)).to_string(), "Mineral");
-	//val!(((*self.data).0.14).to_string(), "Mineral");
-	let seventeenth_column = //val!(mr3_data::determine_gr(self.data.lock().unwrap().0.11),"GrowthRate");
-	val!(mr3_data::determine_gr(match self.data.lock()
-				  {
-				      Ok(y) => y.0.15,
-				      Err(err) => panic!("{}", err),
-				  }
-	)
-				      //(*self.data).0.15)
-				      , "GrowthRate");
-	let sixteenth_column = //val!(self.data.lock().unwrap().1.to_string(), "Money");
-	val!((match self.data.lock()
-				  {
-				      Ok(y) => y.1,
-				      Err(err) => panic!("{}", err),
-				  }).to_string(),"Money");
+	)/10u16).to_string(), "Lifespan").into();
 
+	let seventh_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.6,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )/10u16).to_string(), "InitialSpan").into();
+	let eigth_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.7,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Fatigue").into();
+	let ninth_column =  
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.8,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Stress").into();
+	let tenth_column =  
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.9,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Fear").into();
+	let eleventh_column =
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.10,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Spoil").into();
+	
+	let twelfth_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.11,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Form").into();
+	let thirteenth_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.12,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Protein").into();
+	let fourteenth_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.13,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Vitamin").into();
+	let fifteenth_column = 
+	    val!(((match self.data.lock()
+		   {
+		       Ok(y) => y.0.14,
+		       Err(err) => panic!("{}", err),
+		   }
+	    )).to_string(), "Mineral").into();
+	let seventeenth_column = 
+	    val!(mr3_data::determine_gr(match self.data.lock()
+					{
+					    Ok(y) => y.0.15,
+					    Err(err) => panic!("{}", err),
+					}
+	    )
+		 , "GrowthRate").into();
+	let sixteenth_column =
+	    val!((match self.data.lock()
+		  {
+		      Ok(y) => y.1,
+		      Err(err) => panic!("{}", err),
+		  }).to_string(),"Money").into();
+	
 	Column::with_children(vec!
 			      [
 				  button_column,
@@ -288,19 +289,19 @@ fn express_move<'a>(m: mr3_data::MonMove, c: String) -> Row<'a, Message>
 {
     let mut _s: String = "".to_string();
     _s.push_str(&c.as_str());
-    let mov_name = val!(_s, "MoveName");
+    let mov_name = val!(_s, "MoveName").into();
     //let mov_icon = val!(m.0, ""); useless for now
-    let mov_lvl = val!(m.1.to_string(), "Lvl");
-    let mov_maxlvl = val!(m.2.to_string(), "MaxLvl");
-    let mov_type = val!(m.3.to_string(), "Type");
-    let mov_xp = val!(m.4.to_string(), "XP");
+    let mov_lvl = val!(m.1.to_string(), "Lvl").into();
+    let mov_maxlvl = val!(m.2.to_string(), "MaxLvl").into();
+    let mov_type = val!(m.3.to_string(), "Type").into();
+    let mov_xp = val!(m.4.to_string(), "XP").into();
     //let mov_slot = val!(m.5, "MoveSlot") useless for now
-    let mov_cost = val!(m.6.to_string(), "Cost");
-    let mov_acc = val!(m.7.to_string(), "Accuracy");
-    let mov_crit = val!(m.8.to_string(), "Crit");
-    let mov_dmg = val!(m.9.to_string(), "DMG");
-    let mov_wit = val!(m.10.to_string(), "Withering");
-    let mov_eff1 = val!(m.11.to_string(), "Effect1");
+    let mov_cost = val!(m.6.to_string(), "Cost").into();
+    let mov_acc = val!(m.7.to_string(), "Accuracy").into();
+    let mov_crit = val!(m.8.to_string(), "Crit").into();
+    let mov_dmg = val!(m.9.to_string(), "DMG").into();
+    let mov_wit = val!(m.10.to_string(), "Withering").into();
+    let mov_eff1 = val!(m.11.to_string(), "Effect1").into();
     //let mov_eff2 = val!(m.12.to_string(), "Effect2");
     //let mov_elem = val!(m.13.to_string(), "Element");
     Row::with_children(vec!
