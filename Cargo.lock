@@ -420,12 +420,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "deunicode"
-version = "1.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2c9736e15e7df1638a7f6eee92a6511615c738246a052af5ba86f039b65aede"
-
-[[package]]
 name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1061,13 +1055,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "mr3_advanced_viewer"
-version = "0.0.5"
+name = "mr3-advanced-viewer"
+version = "0.1.0"
 dependencies = [
- "deunicode",
  "iced",
+ "iced_futures",
+ "iced_native",
  "lazy_static",
- "libc",
  "process-memory",
  "process_gaddrs",
  "process_gaddrs_derive",
