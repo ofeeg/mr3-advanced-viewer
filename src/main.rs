@@ -1,3 +1,4 @@
+#![feature(const_for)]
 use iced::{Application, Background, Color, container, Element,  Settings, Command, executor, Text,   futures::executor::block_on,  Subscription, Container, Alignment, Column, Row, button, Button, Length, widget::scrollable};
 mod view_data;
 use lazy_static::__Deref;
@@ -92,14 +93,7 @@ impl Application for Viewer
 		move_button: button::State::new(),
 		shrink_button: button::State::new(),
 		show_moves: false,
-		scrollbar: scrollable::State::new()
-		/*scrollbar: scrollable::Scrollable::new(&mut self.scrollbar)
-		    .width(Length::Fill)
-		    .height(Length::Units(100))
-		    .style(style::Theme)
-		    .push(Space::with_height(Length::Units(800)))
-		  */  
-	    
+		scrollbar: scrollable::State::new()	    
 	    },
 	    Command::none()
 	)

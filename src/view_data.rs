@@ -97,24 +97,27 @@ fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle {i32::from(pid).try_into_pro
 struct MoveOffsets{
     valid_addresses: Vec<u32>,
 }
-
-
-static MOVE1_ADDR : u32 = 0x203841E0;
-static MOVE2_ADDR : u32 = 0x20384228;
-static MOVE3_ADDR : u32 = 0x20384270;
-static MOVE4_ADDR : u32 = 0x203842B8;
-
-
-async fn connect()
+fn get_pcsx2() -> ProcessHandle
 {
-    let mut pcsx2_pid: sysinfo::Pid = sysinfo::Pid::from(0); //= Pid::from(1);
+    let mut pcsx2_pid: sysinfo::Pid = sysinfo::Pid::from(0);
     let mut sys = System::new_all();
     sys.refresh_all();
     for (pid, process) in sys.processes() {
 	//if process.name() == "pcsx2.exe".to_string() {println!("Connected: [{}] {}", pid, process.name());}
 	if process.name() == "pcsx2.exe".to_string() { pcsx2_pid = *pid; }
     }
-        let handle = pcsx2_handle(pcsx2_pid);
+    pcsx2_handle(pcsx2_pid)
+}
+
+//static PCSX2_HANDLE: ProcessHandle = get_pcsx2();
+static MOVE1_ADDR : u32 = 0x203841E0;
+static MOVE2_ADDR : u32 = 0x20384228;
+static MOVE3_ADDR : u32 = 0x20384270;
+static MOVE4_ADDR : u32 = 0x203842B8;
+
+
+async fn connect(handle: ProcessHandle)
+{
     let move_offsets: [u32;15] = 
 	[16,24,25,26,27,28,31,32,33,34,35,36,38,41,54];
     let mut move1_addrs = MoveOffsets::_new(15);
@@ -187,7 +190,7 @@ pub fn connect_process() -> Subscription<Progress>
 		State::Ready(receiver))
 	    }
 	    State::Ready(_input) => {
-		connect().await;
+		connect(get_pcsx2()).await;
 		(Some(Progress::Finished), State::Start)
 	    }
 	}
