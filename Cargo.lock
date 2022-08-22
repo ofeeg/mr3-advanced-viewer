@@ -1062,10 +1062,12 @@ dependencies = [
  "iced_futures",
  "iced_native",
  "lazy_static",
+ "libc",
  "process-memory",
  "process_gaddrs",
  "process_gaddrs_derive",
  "sysinfo",
+ "winapi",
 ]
 
 [[package]]

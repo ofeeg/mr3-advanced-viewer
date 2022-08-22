@@ -2,10 +2,13 @@ use iced::{futures::{future::ok, channel::mpsc, lock::Mutex},Error,  Subscriptio
 use iced_native::subscription;
 use process_gaddrs_derive::ProcessGaddrs;
 use process_gaddrs::ProcessGaddrs;
-use process_memory::{Memory, TryIntoProcessHandle, ProcessHandle};
-use crate::data_member::DataMember;
+use process_memory::{Memory, DataMember,TryIntoProcessHandle, Architecture,};
 #[allow(unused_imports)]
 use sysinfo::{PidExt, ProcessExt, System, SystemExt};
+#[cfg(windows)]
+use winapi::shared::minwindef;
+#[cfg(windows)]
+use std::os::windows::io::AsRawHandle;
 
 pub const M_L_S: usize = 0;
 pub const M_D_S: usize = 1;
@@ -28,6 +31,7 @@ pub const M_S_R: usize = 2;
 pub const M_I_R: usize = 3;
 pub const M_D_R: usize = 4;
 pub const M_L_R: usize = 5;
+
 
 pub type MonMove = (u8, u8, u8, u8, u16, u8, u8, u8, u8, u16, u16, u16);
 #[derive(Debug, Clone)]
@@ -71,6 +75,7 @@ lazy_static::lazy_static!{pub static ref MR3_D: Mutex<ViewData> = Mutex::new(Vie
 											   ((0,0,0,0,0,0,0,0,0,0,0,0), (0,0,0,0,0,0,0,0,0,0,0,0), (0,0,0,0,0,0,0,0,0,0,0,0), (0,0,0,0,0,0,0,0,0,0,0,0)), [("QWERTYUIOPASDFGH").to_string(),("QWERTYUIOPASDFGH").to_string(),("QWERTYUIOPASDFGH").to_string(),("QWERTYUIOPASDFGH").to_string()], 0)) ;}
 
 
+
 #[derive(Debug,Clone)]
 pub enum Progress
 {
@@ -87,6 +92,66 @@ pub enum State
     Ready(mpsc::Receiver<u8>)
 }
 
+
+pub trait ProcessHandleExt {
+    /// Returns `true` if the `ProcessHandle` is not null, and `false` otherwise.
+    fn check_handle(&self) -> bool;
+    /// Return the null equivalent of a `ProcessHandle`.
+    #[must_use]
+    fn null_type() -> ProcessHandle;
+    /// Set this handle to use some architecture
+    #[must_use]
+    fn set_arch(self, arch: Architecture) -> Self;
+}
+
+#[cfg(windows)]
+fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
+#[cfg(windows)]
+pub type Pid = minwindef::DWORD;
+#[cfg(windows)]
+pub struct HANDLE{handle: *mut libc::c_void,}
+#[cfg(windows)]
+unsafe impl Send for HANDLE{}
+#[cfg(windows)]
+unsafe impl Sync for HANDLE{}
+#[cfg(windows)]
+pub type ProcessHandle = (HANDLE::handle, Architecture);
+
+#[cfg(windows)]
+impl ProcessHandleExt for ProcessHandle {
+    #[must_use]
+    fn check_handle(&self) -> bool {
+        self.0.is_null()
+    }
+    #[must_use]
+    fn null_type() -> ProcessHandle {
+        (0, Architecture::from_native())
+    }
+    #[must_use]
+    fn set_arch(self, arch: Architecture) -> Self {
+        (self.0, arch)
+    }
+}
+
+#[cfg(not(windows))]
+pub type Pid = libc::pid_t;
+#[cfg(not(windows))]
+pub type ProcessHandle = (Pid, Architecture);
+#[cfg(not(windows))]
+impl ProcessHandleExt for ProcessHandle {
+    #[must_use]
+    fn check_handle(&self) -> bool {
+        self.0 != 0
+    }
+    #[must_use]
+    fn null_type() -> Self {
+        (0, Architecture::from_native())
+    }
+    #[must_use]
+    fn set_arch(self, arch: Architecture) -> Self {
+        (self.0, arch)
+    }
+}
 #[cfg(windows)]
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
 
@@ -181,8 +246,8 @@ async fn connect(handle: ProcessHandle)
 pub fn connect_process() -> Subscription<Progress>
 {
     struct Connect;
-    unsafe impl Send for Connect{};
-    unsafe impl Sync for Connect{};
+    unsafe impl Send for Connect{}
+    unsafe impl Sync for Connect{}
     subscription::unfold(std::any::TypeId::of::<Connect>(), State::Start, |state| async move
     {
 	match state
