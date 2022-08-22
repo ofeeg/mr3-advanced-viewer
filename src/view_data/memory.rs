@@ -24,6 +24,7 @@ pub type Pid = minwindef::DWORD;
 //#[cfg(windows)]
 //pub type ProcessHandle = (winapi::um::winnt::HANDLE, Architecture);
 #[cfg(windows)]
+#[derive(Copy, Clone, Debug)]
 pub struct HANDLE(winapi::um::winnt::HANDLE);
 #[cfg(windows)]
 unsafe impl Send for HANDLE{}
