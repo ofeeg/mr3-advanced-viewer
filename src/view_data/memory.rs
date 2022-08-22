@@ -34,10 +34,11 @@ unsafe impl Sync for HANDLE{}
 pub type ProcessHandle = (HANDLE, Architecture);
 
 #[cfg(windows)]
+#[derive(Debug, Clone, Copy)]
 impl ProcessHandleExt for ProcessHandle {
     #[must_use]
     fn check_handle(&self) -> bool {
-        self.0.is_null()
+        self.0.0.is_null()
     }
     #[must_use]
     fn null_type() -> ProcessHandle {
