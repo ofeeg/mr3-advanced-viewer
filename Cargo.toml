@@ -14,5 +14,5 @@ process_gaddrs = {path = "process_gaddrs"}
 process_gaddrs_derive = {path = "process_gaddrs/process_gaddrs_derive"}
 sysinfo = "0.24.3"
 process-memory = "0.4.0"
-winapi = "0.3.9"
+winapi = { version = "0.3", features = ["winnt", "memoryapi", "minwindef", "processthreadsapi"] }
 libc = "0.2.1"
