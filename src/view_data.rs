@@ -10,6 +10,7 @@ use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 use winapi::shared::minwindef;
 #[cfg(windows)]
 use std::os::windows::io::AsRawHandle;
+use std::ptr::null_mut;
 
 pub const M_L_S: usize = 0;
 pub const M_D_S: usize = 1;
@@ -109,16 +110,16 @@ pub trait ProcessHandleExt {
 fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
 #[cfg(windows)]
 pub type Pid = minwindef::DWORD;
+//#[cfg(windows)]
+//pub type ProcessHandle = (winapi::um::winnt::HANDLE, Architecture);
 #[cfg(windows)]
-pub type ProcessHandle = (winapi::um::winnt::HANDLE, Architecture);
-/*#[cfg(windows)]
 pub struct HANDLE(*mut c_void);
 #[cfg(windows)]
 unsafe impl Send for HANDLE{}
 #[cfg(windows)]
 unsafe impl Sync for HANDLE{}
 #[cfg(windows)]
-pub type ProcessHandle = (HANDLE, Architecture);*/
+pub type ProcessHandle = (HANDLE, Architecture);
 
 #[cfg(windows)]
 impl ProcessHandleExt for ProcessHandle {
@@ -128,7 +129,7 @@ impl ProcessHandleExt for ProcessHandle {
     }
     #[must_use]
     fn null_type() -> ProcessHandle {
-        (0, Architecture::from_native())
+        (HANDLE(null_mut()), Architecture::from_native())
     }
     #[must_use]
     fn set_arch(self, arch: Architecture) -> Self {
