@@ -152,8 +152,6 @@ impl ProcessHandleExt for ProcessHandle {
         (self.0, arch)
     }
 }
-#[cfg(windows)]
-fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_process_handle().unwrap()}
 
 
 #[cfg(not(windows))]

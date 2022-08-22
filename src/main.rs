@@ -1,7 +1,5 @@
-#![feature(const_for)]
 use iced::{Application, Background, Color, container, Element,  Settings, Command, executor, Text,   futures::executor::block_on,  Subscription, Container, Alignment, Column, Row, button, Button, Length, widget::scrollable};
 mod view_data;
-mod data_member;
 use lazy_static::__Deref;
 use view_data::{ViewData, connect_process, MR3_D, M_L_S, M_L_R, M_P_R, M_P_S, M_I_S, M_I_R, M_S_S, M_S_R, M_D_S, M_D_R, LIFESPAN, INITSPAN, FATIGUE, SPOIL, FORM, PROTEIN, VITAMIN, MINERAL, M_G_R, STRESS, FEAR, MonMove};
 
