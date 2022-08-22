@@ -74,7 +74,7 @@ impl<T: Sized + Copy + Send + Sync> DataMember<T> {
     }
 }
 
-impl<T: Sized + Copy + Sync + Send> Memory<T> for DataMember<T> {
+impl<T: Sized + Copy > Memory<T> for DataMember<T> {
     fn set_offset(&mut self, new_offsets: Vec<usize>) {
         self.offsets = new_offsets;
     }
@@ -147,4 +147,14 @@ mod test {
         member.write(&0xffff).unwrap();
         assert_eq!(test, 0xffff);
     }
+}
+
+unsafe impl<T> Send for DataMember<T>
+{
+
+}    
+
+unsafe impl<T> Sync for DataMember<T>
+{
+
 }
