@@ -109,7 +109,7 @@ fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_proces
 #[cfg(windows)]
 pub type Pid = minwindef::DWORD;
 #[cfg(windows)]
-pub struct HANDLE{handle: *mut libc::c_void,}
+pub struct HANDLE(*mut c_void);
 #[cfg(windows)]
 unsafe impl Send for HANDLE{}
 #[cfg(windows)]
