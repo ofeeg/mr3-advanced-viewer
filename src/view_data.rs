@@ -181,6 +181,8 @@ async fn connect(handle: ProcessHandle)
 pub fn connect_process() -> Subscription<Progress>
 {
     struct Connect;
+    unsafe impl Send for Connect{};
+    unsafe impl Sync for Connect{};
     subscription::unfold(std::any::TypeId::of::<Connect>(), State::Start, |state| async move
     {
 	match state
