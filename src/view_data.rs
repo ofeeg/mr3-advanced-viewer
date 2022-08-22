@@ -1,5 +1,4 @@
-use std::ptr::null_mut;
-
+//use std::ptr::null_mut;
 use iced::{futures::{future::ok, channel::mpsc, lock::Mutex},Error,  Subscription};
 use iced_native::subscription;
 use process_gaddrs_derive::ProcessGaddrs;
@@ -9,8 +8,8 @@ use process_memory::{Memory, DataMember,TryIntoProcessHandle, Architecture,};
 use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 #[cfg(windows)]
 use winapi::shared::minwindef;
-//#[cfg(windows)]
-//use std::os::windows::io::AsRawHandle;
+#[cfg(windows)]
+use std::os::windows::io::AsRawHandle;
 
 pub const M_L_S: usize = 0;
 pub const M_D_S: usize = 1;
@@ -111,13 +110,15 @@ fn pcsx2_handle(pid: sysinfo::Pid) -> ProcessHandle{pid.as_u32().try_into_proces
 #[cfg(windows)]
 pub type Pid = minwindef::DWORD;
 #[cfg(windows)]
+pub type ProcessHandle = (winapi::um::winint::HANDLE, Architecture);
+/*#[cfg(windows)]
 pub struct HANDLE(*mut c_void);
 #[cfg(windows)]
 unsafe impl Send for HANDLE{}
 #[cfg(windows)]
 unsafe impl Sync for HANDLE{}
 #[cfg(windows)]
-pub type ProcessHandle = (HANDLE, Architecture);
+pub type ProcessHandle = (HANDLE, Architecture);*/
 
 #[cfg(windows)]
 impl ProcessHandleExt for ProcessHandle {
@@ -127,7 +128,7 @@ impl ProcessHandleExt for ProcessHandle {
     }
     #[must_use]
     fn null_type() -> ProcessHandle {
-        (HANDLE(0), Architecture::from_native())
+        (0, Architecture::from_native())
     }
     #[must_use]
     fn set_arch(self, arch: Architecture) -> Self {
