@@ -97,7 +97,7 @@ impl Application for Viewer
 	    Command::none()
 	)
     }
-    fn title(&self) -> String{String::from("multi-threading")}
+    fn title(&self) -> String{String::from("mr3-advanced-viewer")}
 
     fn subscription(&self) -> Subscription<Message> {
 	connect_process().map(Message::Update)

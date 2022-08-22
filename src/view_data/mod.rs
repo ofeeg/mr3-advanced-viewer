@@ -232,12 +232,16 @@ fn extract_string(addr: u32, handle: ProcessHandle) -> String
     {
 	match DataMember::<char>::new_offset(handle, vec![(addr+i) as usize]).read()
 	{
-	    Ok(chr) => {if (chr as u8) == 255{break};c.push(mr3char(chr as u8));
+	    Ok(chr) =>
+	    {
+		if (chr as u8) == 255{ return " ".to_string()};
+		c.push(mr3char(chr as u8));
 	    }
-	Err(e) => eprintln!("Read error {}", e), 
+	    Err(e) => eprintln!("Read error {}", e), 
 	}
     }
     //println!("{}", c);
+    if c.cmp(&"AAAAAAAAAAAAAAA".to_string()).is_eq(){return "".to_string()};
     c
 }
 //"Pokorin" should be 0F-28-24-28-2B-22-27 hex 19 is a
