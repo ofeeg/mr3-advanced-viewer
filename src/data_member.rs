@@ -101,60 +101,12 @@ impl<T: Sized + Copy + Send + Sync > Memory<T> for DataMember<T> {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
-    use crate::TryIntoProcessHandle;
-    #[test]
-    fn modify_remote_i32() {
-        let test = 4_i32;
-        #[allow(clippy::cast_possible_wrap)]
-        let handle = (std::process::id() as crate::Pid)
-            .try_into_process_handle()
-            .unwrap();
-        println!("Process Handle: {:?}", handle);
-        let mut member = DataMember::<i32>::new(handle);
-        member.set_offset(vec![&test as *const _ as usize]);
-        assert_eq!(test, member.read().unwrap());
-        member.write(&5_i32).unwrap();
-        assert_eq!(test, 5_i32);
-    }
-    #[test]
-    fn modify_remote_i64() {
-        let test = 3_i64;
-        #[allow(clippy::cast_possible_wrap)]
-        let handle = (std::process::id() as crate::Pid)
-            .try_into_process_handle()
-            .unwrap();
-        println!("Process Handle: {:?}", handle);
-        let mut member = DataMember::<i64>::new(handle);
-        member.set_offset(vec![&test as *const _ as usize]);
-        assert_eq!(test, member.read().unwrap());
-        member.write(&-1_i64).unwrap();
-        assert_eq!(test, -1);
-    }
-    #[test]
-    fn modify_remote_usize() {
-        let test = 0_usize;
-        #[allow(clippy::cast_possible_wrap)]
-        let handle = (std::process::id() as crate::Pid)
-            .try_into_process_handle()
-            .unwrap();
-        println!("Process Handle: {:?}", handle);
-        let mut member = DataMember::<usize>::new(handle);
-        member.set_offset(vec![&test as *const _ as usize]);
-        assert_eq!(test, member.read().unwrap());
-        member.write(&0xffff).unwrap();
-        assert_eq!(test, 0xffff);
-    }
-}
-
-unsafe impl<T> Send for DataMember<T>
+unsafe impl<T: Sized + Send> Send for DataMember<T>
 {
 
 }    
 
-unsafe impl<T> Sync for DataMember<T>
+unsafe impl<T: Sized + Send> Sync for DataMember<T>
 {
 
 }
