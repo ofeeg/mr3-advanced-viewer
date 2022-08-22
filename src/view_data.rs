@@ -2,7 +2,8 @@ use iced::{futures::{future::ok, channel::mpsc, lock::Mutex},Error,  Subscriptio
 use iced_native::subscription;
 use process_gaddrs_derive::ProcessGaddrs;
 use process_gaddrs::ProcessGaddrs;
-use process_memory::{Memory, DataMember,TryIntoProcessHandle, ProcessHandle};
+use process_memory::{Memory, TryIntoProcessHandle, ProcessHandle};
+use crate::data_member::DataMember;
 #[allow(unused_imports)]
 use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 
