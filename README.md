@@ -1,13 +1,11 @@
-# mr3-advanced-viewer v0.0.5(prototype)
+# mr3-advanced-viewer v0.1.0(alpha)
 A GUI application to view Monster Rancher 3 data running in pcsx2.
 # WARNING!!!
 This only works with PCSX 1.6.0 currently, as the most recent Nightly builds, and probably other more recent versions of PCSX2,have done something which changes the memory locations of all the data in the game. PCSX2's official build as of writing this is currently 1.6.0, so just go to their site and download that if the iewer isn't working.
 
 # How to Run
 ## Windows
-Just select and run the executable. After that, if you already have MR3 running, just hit connect.
-
-Currently, it does NOT update automatically. You have to hit update everytime the game updates the values(AKA: hit update every monser interaction).
+Start up your pcsx2 and load Monster Rancher 3. After that, just select and run the mr3-advanced-viewer.exe file.
 
 For reporting bugs, DM or ping in any MR discord @most#4673.
 
