@@ -241,3 +241,6 @@ fn mr3char(mut d: u8) -> char {
     else if d <= 56 {d+=71; char::from(d)}
     else{' '}    
 }
+
+unsafe impl Send for ViewData{}
+unsafe impl Sync for ViewData{}
