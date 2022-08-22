@@ -1,3 +1,5 @@
+use std::ptr::null_mut;
+
 use iced::{futures::{future::ok, channel::mpsc, lock::Mutex},Error,  Subscription};
 use iced_native::subscription;
 use process_gaddrs_derive::ProcessGaddrs;
@@ -121,11 +123,11 @@ pub type ProcessHandle = (HANDLE, Architecture);
 impl ProcessHandleExt for ProcessHandle {
     #[must_use]
     fn check_handle(&self) -> bool {
-        self.0.handle.is_null()
+        self.0.is_null()
     }
     #[must_use]
     fn null_type() -> ProcessHandle {
-        (0, Architecture::from_native())
+        (HANDLE(0), Architecture::from_native())
     }
     #[must_use]
     fn set_arch(self, arch: Architecture) -> Self {
