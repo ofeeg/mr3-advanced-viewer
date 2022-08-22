@@ -31,10 +31,10 @@ unsafe impl Send for HANDLE{}
 #[cfg(windows)]
 unsafe impl Sync for HANDLE{}
 #[cfg(windows)]
+#[derive(Debug, Clone, Copy)]
 pub type ProcessHandle = (HANDLE, Architecture);
 
 #[cfg(windows)]
-#[derive(Debug, Clone, Copy)]
 impl ProcessHandleExt for ProcessHandle {
     #[must_use]
     fn check_handle(&self) -> bool {
