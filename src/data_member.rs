@@ -74,7 +74,7 @@ impl<T: Sized + Copy + Send + Sync> DataMember<T> {
     }
 }
 
-impl<T: Sized + Copy > Memory<T> for DataMember<T> {
+impl<T: Sized + Copy + Send + Sync > Memory<T> for DataMember<T> {
     fn set_offset(&mut self, new_offsets: Vec<usize>) {
         self.offsets = new_offsets;
     }
@@ -158,3 +158,7 @@ unsafe impl<T> Sync for DataMember<T>
 {
 
 }
+
+//unsafe impl<T> Send for dyn Memory<T>{}
+
+//unsafe impl<T> Sync for dyn Memory<T>{}
