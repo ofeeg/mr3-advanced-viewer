@@ -113,7 +113,7 @@ pub type Pid = minwindef::DWORD;
 //#[cfg(windows)]
 //pub type ProcessHandle = (winapi::um::winnt::HANDLE, Architecture);
 #[cfg(windows)]
-pub struct HANDLE(*mut c_void);
+pub struct HANDLE(winapi::um::winnt::HANDLE);
 #[cfg(windows)]
 unsafe impl Send for HANDLE{}
 #[cfg(windows)]
