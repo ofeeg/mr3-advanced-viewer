@@ -59,7 +59,6 @@ unsafe impl Send for HANDLE{}
 #[cfg(windows)]
 unsafe impl Sync for HANDLE{}
 #[cfg(windows)]
-#[derive(Debug, Clone, Copy)]
 pub type ProcessHandle = (HANDLE, Architecture);
 
 #[cfg(windows)]
@@ -103,6 +102,36 @@ impl TryIntoProcessHandle for minwindef::DWORD {
             Err(std::io::Error::last_os_error())
         } else {
             Ok((HANDLE(handle), Architecture::from_native()))
+        }
+    }
+}
+
+#[cfg(windows)]
+impl CopyAddress for ProcessHandle {
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn get_pointer_width(&self) -> Architecture {
+        self.1
+    }
+
+    fn copy_address(&self, addr: usize, buf: &mut [u8]) -> std::io::Result<()> {
+        if buf.is_empty() {
+            return Ok(());
+        }
+
+        if unsafe {
+            winapi::um::memoryapi::ReadProcessMemory(
+                self.0.0,
+                addr as minwindef::LPVOID,
+                buf.as_mut_ptr() as minwindef::LPVOID,
+                buf.len() as winapi::shared::basetsd::SIZE_T,
+                std::ptr::null_mut(),
+            )
+        } == winapi::shared::minwindef::FALSE
+        {
+            Err(std::io::Error::last_os_error())
+        } else {
+            Ok(())
         }
     }
 }
