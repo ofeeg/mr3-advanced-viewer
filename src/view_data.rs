@@ -7,8 +7,8 @@ use process_memory::{Memory, DataMember,TryIntoProcessHandle, Architecture,};
 use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 #[cfg(windows)]
 use winapi::shared::minwindef;
-#[cfg(windows)]
-use std::os::windows::io::AsRawHandle;
+//#[cfg(windows)]
+//use std::os::windows::io::AsRawHandle;
 
 pub const M_L_S: usize = 0;
 pub const M_D_S: usize = 1;
@@ -115,13 +115,13 @@ unsafe impl Send for HANDLE{}
 #[cfg(windows)]
 unsafe impl Sync for HANDLE{}
 #[cfg(windows)]
-pub type ProcessHandle = (HANDLE::handle, Architecture);
+pub type ProcessHandle = (HANDLE, Architecture);
 
 #[cfg(windows)]
 impl ProcessHandleExt for ProcessHandle {
     #[must_use]
     fn check_handle(&self) -> bool {
-        self.0.is_null()
+        self.0.handle.is_null()
     }
     #[must_use]
     fn null_type() -> ProcessHandle {
